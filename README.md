@@ -1,6 +1,6 @@
 # 🔐 Password Strength Analyzer
 
-A sleek and responsive password strength analyzer built using **HTML**, **CSS**, and **JavaScript**.
+A smart and stylish password strength analyzer that gives real-time feedback to help users create stronger, safer passwords 🔐
 
 ## ✨ Features
 
