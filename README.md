@@ -24,8 +24,7 @@ A sleek and responsive password strength analyzer built using **HTML**, **CSS**,
 ├── style.css
 ├── script.js
 └── README.md
-
-
+```
 
 🚀 Getting Started
 Download or clone the repository
