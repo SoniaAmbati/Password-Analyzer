@@ -34,6 +34,7 @@ Open index.html in your browser
 
 Done.
 
+---
 
 ## 🛠️ Technologies Used
 1. HTML5
@@ -42,6 +43,7 @@ Done.
 
 3. Vanilla JavaScript
 
+---
 
 ## 📸 Preview
 
