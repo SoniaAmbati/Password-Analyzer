@@ -26,19 +26,23 @@ A sleek and responsive password strength analyzer built using **HTML**, **CSS**,
 └── README.md
 ```
 
-🚀 Getting Started
+## 🚀 Getting Started
+
 Download or clone the repository
+
 Open index.html in your browser
 
 Done.
 
 
-🛠️ Technologies Used
-HTML5
-CSS3
-Vanilla JavaScript
+## 🛠️ Technologies Used
+1. HTML5
+
+2. CSS3
+
+3. Vanilla JavaScript
 
 
-📸 Preview
+## 📸 Preview
 
 Strong passwords = Better security 🔒
