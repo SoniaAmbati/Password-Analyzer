@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Strength Analyzer</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Password Strength Analyzer</h1>
+
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Enter your password">
+      <span class="toggle-btn" id="toggleBtn">Show</span>
+    </div>
+
+    <div class="strength-bar">
+      <div class="strength-fill" id="strengthFill"></div>
+    </div>
+
+    <div class="strength-text" id="strengthText">
+      Strength: None
+    </div>
+
+    <ul>
+      <li id="length" class="invalid">At least 8 characters</li>
+      <li id="uppercase" class="invalid">Contains uppercase letter</li>
+      <li id="lowercase" class="invalid">Contains lowercase letter</li>
+      <li id="number" class="invalid">Contains a number</li>
+      <li id="special" class="invalid">Contains special character</li>
+    </ul>
+
+    <div class="tips">
+      <strong>Tips for strong passwords:</strong><br>
+      • Use at least 12 characters<br>
+      • Mix letters, numbers, and symbols<br>
+      • Avoid common words or personal info<br>
+      • Use unique passwords for every account
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
