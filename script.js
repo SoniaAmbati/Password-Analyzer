@@ -36,6 +36,14 @@ password.addEventListener("input", () => {
   }
 
   updateStrength(score);
+
+  if (val.length === 0) {
+    strengthText.textContent = "Strength: None";
+    strengthText.style.color = "#fff";
+
+    strengthFill.style.width = "0%";
+    strengthFill.style.background = "transparent";
+  }
 });
 
 function updateStrength(score) {
@@ -81,14 +89,4 @@ function updateStrength(score) {
 
   strengthText.textContent = `Strength: ${text}`;
   strengthText.style.color = color;
-}
-
-toggleBtn.addEventListener("click", () => {
-  if (password.type === "password") {
-    password.type = "text";
-    toggleBtn.textContent = "Hide";
-  } else {
-    password.type = "password";
-    toggleBtn.textContent = "Show";
-  }
-});
+};
