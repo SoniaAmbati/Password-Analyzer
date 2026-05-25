@@ -89,4 +89,13 @@ function updateStrength(score) {
 
   strengthText.textContent = `Strength: ${text}`;
   strengthText.style.color = color;
-};
+}
+
+toggleBtn.addEventListener("click", () => {
+
+  const isHidden = password.type === "password";
+
+  password.type = isHidden ? "text" : "password";
+
+  toggleBtn.textContent = isHidden ? "Hide" : "Show";
+});
