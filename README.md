@@ -44,6 +44,6 @@ Done.
 
 ---
 
-## 📸 Preview
+## MADE FOR BETTER SECURITY
 
 Strong passwords = Better security 🔒
