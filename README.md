@@ -44,6 +44,4 @@ Done.
 
 ---
 
-## MADE FOR BETTER SECURITY
-
-Strong passwords = Better security 🔒
+## MADE FOR BETTER SECURITY 🔒
