@@ -13,7 +13,6 @@ A smart and stylish password strength analyzer that gives real-time feedback to 
   - Numbers
   - Special characters
   - Minimum length
-- Clean and modern UI
 
 ---
 
