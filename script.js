@@ -4,6 +4,20 @@ const strengthText = document.getElementById("strengthText");
 const entropyText = document.getElementById("entropyText");
 const toggleBtn = document.getElementById("toggleBtn");
 
+// Small list of common/leaked passwords to warn users
+const commonPasswords = [
+  "password",
+  "123456",
+  "123456789",
+  "qwerty",
+  "111111",
+  "abc123",
+  "password1",
+  "admin",
+  "welcome",
+  "letmein"
+];
+
 const checks = {
   length: document.getElementById("length"),
   uppercase: document.getElementById("uppercase"),
@@ -49,6 +63,18 @@ password.addEventListener("input", () => {
   } else {
     entropyText.innerHTML = `Entropy: ${rounded} bits<br>Security Level: ${level.text}`;
     entropyText.style.color = level.color;
+  }
+
+  // Detect common / leaked passwords (case-insensitive)
+  if (val.length > 0 && commonPasswords.includes(val.toLowerCase())) {
+    const warnColor = "#ef4444";
+    strengthText.textContent = "Common Password Detected";
+    strengthText.style.color = warnColor;
+    strengthFill.style.width = "100%";
+    strengthFill.style.background = warnColor;
+    entropyText.innerHTML = `Entropy: ${rounded} bits<br>Security Level: Common Password (Very Weak)`;
+    entropyText.style.color = warnColor;
+    return; // skip default empty handling
   }
 
   if (val.length === 0) {
