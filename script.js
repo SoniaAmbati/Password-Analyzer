@@ -4,20 +4,6 @@ const strengthText = document.getElementById("strengthText");
 const entropyText = document.getElementById("entropyText");
 const toggleBtn = document.getElementById("toggleBtn");
 
-// Small list of common/leaked passwords to warn users
-const commonPasswords = [
-  "password",
-  "123456",
-  "123456789",
-  "qwerty",
-  "111111",
-  "abc123",
-  "password1",
-  "admin",
-  "welcome",
-  "letmein"
-];
-
 const checks = {
   length: document.getElementById("length"),
   uppercase: document.getElementById("uppercase"),
@@ -26,8 +12,29 @@ const checks = {
   special: document.getElementById("special")
 };
 
+// Small built-in common passwords list (case-insensitive)
+const _builtInCommon = [
+  "password",
+  "123456",
+  "123456789",
+  "qwerty",
+  "abc123",
+  "111111",
+  "12345678",
+  "admin",
+  "letmein",
+  "welcome"
+];
+const commonPasswords = new Set(_builtInCommon.map(p => p.toLowerCase()));
+let externalCommonSet = null; // will hold a Set when lazy-loaded
+
 password.addEventListener("input", () => {
   const val = password.value;
+
+  // lazy-load external list when user types a few characters
+  if (!externalCommonSet && val.length >= 4) {
+    loadCommonPasswords();
+  }
 
   const rules = {
     length: val.length >= 8,
@@ -65,24 +72,23 @@ password.addEventListener("input", () => {
     entropyText.style.color = level.color;
   }
 
-  // Detect common / leaked passwords (case-insensitive)
-  if (val.length > 0 && commonPasswords.includes(val.toLowerCase())) {
-    const warnColor = "#ef4444";
-    strengthText.textContent = "Common Password Detected";
-    strengthText.style.color = warnColor;
-    strengthFill.style.width = "100%";
-    strengthFill.style.background = warnColor;
-    entropyText.innerHTML = `Entropy: ${rounded} bits<br>Security Level: Common Password (Very Weak)`;
-    entropyText.style.color = warnColor;
-    return; // skip default empty handling
-  }
-
   if (val.length === 0) {
     strengthText.textContent = "Strength: None";
     strengthText.style.color = "#fff";
 
     strengthFill.style.width = "0%";
     strengthFill.style.background = "transparent";
+  }
+
+  // Common password check (case-insensitive)
+  const isCommon = checkCommonPassword(val);
+  if (isCommon) {
+    strengthText.textContent = "Common Password Detected";
+    strengthText.style.color = "#ef4444";
+    strengthFill.style.width = "10%";
+    strengthFill.style.background = "#ef4444";
+    entropyText.innerHTML = `Entropy: 0 bits<br>Security Level: Very Weak`;
+    entropyText.style.color = "#ef4444";
   }
 });
 
@@ -149,6 +155,31 @@ function getSecurityLevel(entropy) {
   if (entropy <= 60) return { text: "Medium", color: "#eab308" };
   if (entropy <= 100) return { text: "Strong", color: "#22c55e" };
   return { text: "Excellent", color: "#16a34a" };
+}
+
+function checkCommonPassword(val) {
+  if (!val) return false;
+  const low = val.toLowerCase();
+  if (commonPasswords.has(low)) return true;
+  if (externalCommonSet && externalCommonSet.has(low)) return true;
+  return false;
+}
+
+// Lazy-load a larger common passwords file named 'common-passwords.txt' (one per line).
+// This is optional — if the file isn't present or fetch fails, we silently continue.
+async function loadCommonPasswords() {
+  if (externalCommonSet) return;
+  try {
+    const res = await fetch('common-passwords.txt');
+    if (!res.ok) return;
+    const txt = await res.text();
+    const lines = txt.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    externalCommonSet = new Set(lines.map(l => l.toLowerCase()));
+    // merge into the built-in set for faster single-set checks
+    for (const p of externalCommonSet) commonPasswords.add(p);
+  } catch (e) {
+    // ignore; fetching may fail when opened via file:// or not served
+  }
 }
 
 toggleBtn.addEventListener("click", () => {
