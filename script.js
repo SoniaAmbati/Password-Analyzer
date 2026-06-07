@@ -1,6 +1,7 @@
 const password = document.getElementById("password");
 const strengthFill = document.getElementById("strengthFill");
 const strengthText = document.getElementById("strengthText");
+const entropyText = document.getElementById("entropyText");
 const toggleBtn = document.getElementById("toggleBtn");
 
 const checks = {
@@ -36,6 +37,19 @@ password.addEventListener("input", () => {
   }
 
   updateStrength(score);
+
+  // Calculate and display entropy + security level
+  const entropy = calculateEntropy(val);
+  const rounded = Math.round(entropy);
+  const level = getSecurityLevel(entropy);
+
+  if (val.length === 0) {
+    entropyText.innerHTML = `Entropy: 0 bits<br>Security Level: None`;
+    entropyText.style.color = "#fff";
+  } else {
+    entropyText.innerHTML = `Entropy: ${rounded} bits<br>Security Level: ${level.text}`;
+    entropyText.style.color = level.color;
+  }
 
   if (val.length === 0) {
     strengthText.textContent = "Strength: None";
@@ -89,6 +103,26 @@ function updateStrength(score) {
 
   strengthText.textContent = `Strength: ${text}`;
   strengthText.style.color = color;
+}
+
+function calculateEntropy(password) {
+  let pool = 0;
+
+  if (/[a-z]/.test(password)) pool += 26;
+  if (/[A-Z]/.test(password)) pool += 26;
+  if (/[0-9]/.test(password)) pool += 10;
+  if (/[^A-Za-z0-9]/.test(password)) pool += 32;
+
+  const entropy = password.length * Math.log2(pool || 1);
+  return isFinite(entropy) ? entropy : 0;
+}
+
+function getSecurityLevel(entropy) {
+  if (entropy <= 28) return { text: "Very Weak", color: "#ef4444" };
+  if (entropy <= 36) return { text: "Weak", color: "#f97316" };
+  if (entropy <= 60) return { text: "Medium", color: "#eab308" };
+  if (entropy <= 100) return { text: "Strong", color: "#22c55e" };
+  return { text: "Excellent", color: "#16a34a" };
 }
 
 toggleBtn.addEventListener("click", () => {

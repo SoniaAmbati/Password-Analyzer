@@ -85,6 +85,12 @@ input:focus{
   margin-bottom:20px;
 }
 
+.entropy-text{
+  font-size:15px;
+  margin-bottom:18px;
+  color:#d1d5db;
+}
+
 ul{
   list-style:none;
 }
