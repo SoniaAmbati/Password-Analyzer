@@ -66,11 +66,6 @@ password.addEventListener("input", () => {
   }
 
   updateStrength(score);
-
-  // Generate and display real-time suggestions
-  const suggestions = generateSuggestions(val, rules, entropy);
-  renderSuggestions(suggestions);
-
   // Calculate and display entropy + security level
   const entropy = calculateEntropy(val);
   const rounded = Math.round(entropy);
@@ -88,6 +83,10 @@ password.addEventListener("input", () => {
     entropyIcon.textContent = level.text === 'Very Weak' ? '❌' : level.text === 'Weak' ? '⚠️' : level.text === 'Medium' ? '🟡' : level.text === 'Strong' ? '✅' : '🔒';
     entropyIcon.style.color = level.color;
   }
+
+  // Generate and display real-time suggestions
+  const suggestions = generateSuggestions(val, rules, entropy);
+  renderSuggestions(suggestions);
 
   if (val.length === 0) {
     strengthLabel.textContent = "Strength: None";
@@ -312,10 +311,20 @@ async function loadCommonPasswords() {
 }
 
 toggleBtn.addEventListener("click", () => {
-
   const isHidden = password.type === "password";
 
   password.type = isHidden ? "text" : "password";
 
-  toggleBtn.textContent = isHidden ? "Hide" : "Show";
+  // Use icons and update accessible label
+  if (isHidden) {
+    // now visible
+    toggleBtn.textContent = '🙈';
+    toggleBtn.setAttribute('aria-pressed', 'true');
+    toggleBtn.setAttribute('aria-label', 'Hide password');
+  } else {
+    // now hidden
+    toggleBtn.textContent = '👁️';
+    toggleBtn.setAttribute('aria-pressed', 'false');
+    toggleBtn.setAttribute('aria-label', 'Show password');
+  }
 });
