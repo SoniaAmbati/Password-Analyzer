@@ -12,6 +12,10 @@ const checks = {
   special: document.getElementById("special")
 };
 
+// HIBP k-Anonymity helpers
+let pwnedTimer = null;
+let lastPwnedHash = null;
+
 // Small built-in common passwords list (case-insensitive)
 const _builtInCommon = [
   "password",
@@ -90,6 +94,26 @@ password.addEventListener("input", () => {
     entropyText.innerHTML = `Entropy: 0 bits<br>Security Level: Very Weak`;
     entropyText.style.color = "#ef4444";
   }
+
+  // Schedule HIBP breach check (debounced). Skip if empty or already common.
+  if (pwnedTimer) clearTimeout(pwnedTimer);
+  if (!val || isCommon) return;
+
+  pwnedTimer = setTimeout(async () => {
+    try {
+      const count = await checkPwnedPassword(val);
+      if (count > 0) {
+        strengthText.textContent = `Compromised: seen ${count} times`;
+        strengthText.style.color = "#ef4444";
+        strengthFill.style.width = "10%";
+        strengthFill.style.background = "#ef4444";
+        entropyText.innerHTML = `Entropy: 0 bits<br>Security Level: Very Weak`;
+        entropyText.style.color = "#ef4444";
+      }
+    } catch (e) {
+      // network or crypto errors — silently ignore
+    }
+  }, 700);
 });
 
 function updateStrength(score) {
@@ -155,6 +179,38 @@ function getSecurityLevel(entropy) {
   if (entropy <= 60) return { text: "Medium", color: "#eab308" };
   if (entropy <= 100) return { text: "Strong", color: "#22c55e" };
   return { text: "Excellent", color: "#16a34a" };
+}
+
+async function sha1Hex(input) {
+  const enc = new TextEncoder();
+  const data = enc.encode(input);
+  const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+  const bytes = Array.from(new Uint8Array(hashBuffer));
+  return bytes.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+// Returns number of times password seen in breaches (0 if not found)
+async function checkPwnedPassword(password) {
+  const hash = await sha1Hex(password);
+  if (hash === lastPwnedHash) return 0; // already checked same hash recently
+  lastPwnedHash = hash;
+
+  const prefix = hash.slice(0,5);
+  const suffix = hash.slice(5);
+
+  const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
+  if (!res.ok) return 0;
+  const txt = await res.text();
+  const lines = txt.split(/\r?\n/);
+  for (const line of lines) {
+    const [hashSuffix, countStr] = line.split(':');
+    if (!hashSuffix) continue;
+    if (hashSuffix.toUpperCase() === suffix.toUpperCase()) {
+      const count = parseInt(countStr.replace(/\D/g, ''), 10) || 0;
+      return count;
+    }
+  }
+  return 0;
 }
 
 function checkCommonPassword(val) {
