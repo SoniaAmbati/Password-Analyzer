@@ -91,23 +91,13 @@ input:focus{
   color:#d1d5db;
 }
 
-.suggestions{
-  background:#0b1220;
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:12px;
-  color:#d1d5db;
-}
-
-.suggestions ul{
-  margin-top:8px;
-  list-style:disc;
-  padding-left:20px;
-}
-
-.suggestions li{
-  margin:6px 0;
-  font-size:14px;
+.status-icon{
+  display:inline-block;
+  width:22px;
+  text-align:center;
+  margin-right:8px;
+  font-size:18px;
+  vertical-align:middle;
 }
 
 ul{
