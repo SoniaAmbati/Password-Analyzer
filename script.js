@@ -3,6 +3,7 @@ const strengthFill = document.getElementById("strengthFill");
 const strengthText = document.getElementById("strengthText");
 const entropyText = document.getElementById("entropyText");
 const toggleBtn = document.getElementById("toggleBtn");
+const suggestionsList = document.getElementById("suggestionsList");
 
 const checks = {
   length: document.getElementById("length"),
@@ -95,9 +96,13 @@ password.addEventListener("input", () => {
     entropyText.style.color = "#ef4444";
   }
 
+  // Compute and render suggestions immediately
+  const suggestions = getSuggestions(val, rules, entropy, isCommon);
+  renderSuggestions(suggestions);
+
   // Schedule HIBP breach check (debounced). Skip if empty or already common.
   if (pwnedTimer) clearTimeout(pwnedTimer);
-  if (!val || isCommon) return;
+  if (!val) return;
 
   pwnedTimer = setTimeout(async () => {
     try {
@@ -109,6 +114,8 @@ password.addEventListener("input", () => {
         strengthFill.style.background = "#ef4444";
         entropyText.innerHTML = `Entropy: 0 bits<br>Security Level: Very Weak`;
         entropyText.style.color = "#ef4444";
+        // update suggestions to warn user
+        renderSuggestions([`This password was found in breaches (${count} times) — choose a unique password`]);
       }
     } catch (e) {
       // network or crypto errors — silently ignore
@@ -209,6 +216,67 @@ async function checkPwnedPassword(password) {
       const count = parseInt(countStr.replace(/\D/g, ''), 10) || 0;
       return count;
     }
+
+  function getSuggestions(password, rules, entropy, isCommon) {
+    const out = [];
+    if (!password) return out;
+
+    // Length suggestion (recommend 12+)
+    const desired = 12;
+    if (password.length < desired) {
+      const need = desired - password.length;
+      out.push(`Add ${need} more character${need > 1 ? 's' : ''}`);
+    }
+
+    if (!rules.uppercase) out.push('Include an uppercase letter');
+    if (!rules.lowercase) out.push('Include a lowercase letter');
+    if (!rules.number) out.push('Include a number');
+    if (!rules.special) out.push('Include a special character');
+
+    if (hasRepeatedPatterns(password)) out.push('Avoid repeated characters or repeated patterns');
+    if (hasSequentialChars(password, 4)) out.push('Avoid sequential characters (e.g. 1234 or abcd)');
+
+    if (isCommon) out.unshift('Avoid commonly used passwords');
+
+    // Low entropy suggestion
+    if (entropy <= 28 && out.indexOf('Avoid commonly used passwords') === -1) {
+      out.push('Increase length and character variety to raise entropy');
+    }
+
+    return out;
+  }
+
+  function renderSuggestions(list) {
+    if (!suggestionsList) return;
+    if (!list || list.length === 0) {
+      suggestionsList.innerHTML = '<li>None — good job!</li>';
+      return;
+    }
+    suggestionsList.innerHTML = list.map(s => `<li>${s}</li>`).join('');
+  }
+
+  function hasRepeatedPatterns(pw) {
+    if (!pw) return false;
+    if (/(.)\1{2,}/.test(pw)) return true; // aaa
+    if (/([\w\W]{2,})\1/.test(pw)) return true; // abcdabcd
+    return false;
+  }
+
+  function hasSequentialChars(pw, minLen = 4) {
+    if (!pw || pw.length < minLen) return false;
+    const seq = (a, b) => b.charCodeAt(0) - a.charCodeAt(0);
+    // check for increasing or decreasing runs
+    for (let i = 0; i <= pw.length - minLen; i++) {
+      let inc = true, dec = true;
+      for (let j = i; j < i + minLen - 1; j++) {
+        const diff = pw.charCodeAt(j+1) - pw.charCodeAt(j);
+        if (diff !== 1) inc = false;
+        if (diff !== -1) dec = false;
+      }
+      if (inc || dec) return true;
+    }
+    return false;
+  }
   }
   return 0;
 }
