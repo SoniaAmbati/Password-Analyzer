@@ -14,6 +14,8 @@ const checks = {
   special: document.getElementById("special")
 };
 
+const suggestionsList = document.getElementById("suggestionsList");
+
 // HIBP k-Anonymity helpers
 let pwnedTimer = null;
 let lastPwnedHash = null;
@@ -64,6 +66,10 @@ password.addEventListener("input", () => {
   }
 
   updateStrength(score);
+
+  // Generate and display real-time suggestions
+  const suggestions = generateSuggestions(val, rules, entropy);
+  renderSuggestions(suggestions);
 
   // Calculate and display entropy + security level
   const entropy = calculateEntropy(val);
@@ -174,8 +180,11 @@ function updateStrength(score) {
   strengthFill.style.width = width;
   strengthFill.style.background = color;
 
-  strengthText.textContent = `Strength: ${text}`;
-  strengthText.style.color = color;
+  strengthLabel.textContent = `Strength: ${text}`;
+  strengthLabel.style.color = color;
+  // set icon
+  strengthIcon.textContent = text === 'Very Weak' ? '❌' : text === 'Weak' ? '⚠️' : text === 'Medium' ? '🟡' : text === 'Strong' ? '✅' : '🔒';
+  strengthIcon.style.color = color;
 }
 
 function calculateEntropy(password) {
@@ -196,6 +205,53 @@ function getSecurityLevel(entropy) {
   if (entropy <= 60) return { text: "Medium", color: "#eab308" };
   if (entropy <= 100) return { text: "Strong", color: "#22c55e" };
   return { text: "Excellent", color: "#16a34a" };
+}
+
+function generateSuggestions(val, rules, entropy) {
+  const s = [];
+  if (!val) return s;
+
+  // Length recommendation (target 12)
+  const target = 12;
+  if (val.length < target) {
+    s.push(`Add ${target - val.length} more character${target - val.length > 1 ? 's' : ''}`);
+  }
+
+  if (!rules.uppercase) s.push('Include an uppercase letter');
+  if (!rules.lowercase) s.push('Include a lowercase letter');
+  if (!rules.number) s.push('Include a number');
+  if (!rules.special) s.push('Include a special character');
+
+  // Repeated characters
+  if (/(.)\1{2,}/.test(val)) s.push('Avoid repeated characters (e.g. "aaa")');
+
+  // Repeated sequence (e.g. abcabc)
+  if (/(.+)\1{1,}/.test(val)) s.push('Avoid repeated patterns');
+
+  // Simple sequential check for digits (e.g. 1234)
+  if (/0123|1234|2345|3456|4567|5678|6789/.test(val)) s.push('Avoid sequential patterns (e.g. "1234")');
+
+  // If entropy is low for length, suggest more unpredictability
+  if (entropy < 40 && val.length >= target) s.push('Increase unpredictability (use varied characters)');
+
+  // Deduplicate and limit suggestions
+  return [...new Set(s)].slice(0, 6);
+}
+
+function renderSuggestions(items) {
+  suggestionsList.innerHTML = '';
+  if (!items || items.length === 0) {
+    const li = document.createElement('li');
+    li.textContent = 'No suggestions — looking good.';
+    suggestionsList.appendChild(li);
+    return;
+  }
+
+  for (const it of items) {
+    const li = document.createElement('li');
+    li.textContent = it;
+    suggestionsList.appendChild(li);
+  }
 }
 
 async function sha1Hex(input) {

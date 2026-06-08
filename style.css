@@ -148,6 +148,35 @@ li.invalid::before{
   color:#d1d5db;
 }
 
+.suggestions{
+  margin-top:14px;
+  background:#0b1220;
+  padding:12px;
+  border-radius:10px;
+  color:#d1d5db;
+  font-size:14px;
+}
+
+.suggestions ul{
+  margin-top:8px;
+  list-style:none;
+  padding-left:0;
+}
+
+.suggestions li{
+  padding:6px 0;
+  display:flex;
+  align-items:flex-start;
+}
+
+.suggestions li::before{
+  content:"•";
+  color:#9ca3af;
+  display:inline-block;
+  width:18px;
+  margin-right:8px;
+}
+
 @keyframes fadeIn{
   from{
     opacity:0;
