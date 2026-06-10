@@ -5,7 +5,7 @@ A smart and stylish password strength analyzer that gives real-time feedback to 
 ## ✨ Features
 
 - Real-time password strength checking
-- Dynamic strength meter
+- Dynamic strength meterized
 - Show / Hide password toggle
 - Validation for:
   - Uppercase letters
