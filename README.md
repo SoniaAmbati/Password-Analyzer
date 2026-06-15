@@ -31,8 +31,6 @@ Download or clone the repository
 
 Open index.html in your browser
 
-Done.
-
 ---
 
 ## 🛠️ Technologies Used
