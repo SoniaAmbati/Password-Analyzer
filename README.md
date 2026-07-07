@@ -1,6 +1,6 @@
 # 🔐 Password Strength Analyzer
 
-A smart password strength analyzer that gives real-time feedback to help users create stronger, safer passwords 🔐
+A smart password strength analyzer that gives real-time feedback to help users create stronger, safer passwords 
 
 ## ✨ Features
 
